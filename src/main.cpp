@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 		BASS_ChannelGetData(stream, fft, BASS_DATA_FFT2048);
 		//TODO NORMALISE AFTER SQRT
 		for (int i = 0; i < FFT_SAMPLES; i++)
-			fft[i] = sqrt(sqrt(fft[i])) * FFT_SCALEf; // scale the FFT values
+			fft[i] = sqrt(fft[i]) * FFT_SCALEf; // scale the FFT values
 
 		// Update the old bins
 		std::copy(bins, bins + NUM_BINS, oldbins);
