@@ -20,7 +20,7 @@ function Get-NuGet {
 $nuget = Get-NuGet
 & $nuget restore "$PSScriptRoot/AudioVisualiser.sln"
 
-msbuildArgs = @(
+$msbuildArgs = @(
     'AudioVisualiser.sln',
     "/p:Configuration=$Configuration",
     "/p:Platform=$Platform"
