@@ -125,9 +125,17 @@ int main(int argc, char* argv[])
 		// Get the FFT
 		float fft[FFT_SAMPLES];
 		BASS_ChannelGetData(stream, fft, BASS_DATA_FFT2048);
-		//TODO NORMALISE AFTER SQRT
-		for (int i = 0; i < FFT_SAMPLES; i++)
-			fft[i] = sqrt(fft[i]) * FFT_SCALEf; // scale the FFT values
+                for (int i = 0; i < FFT_SAMPLES; i++)
+                        fft[i] = sqrt(fft[i]);
+
+                // Normalise FFT values for consistent scaling
+                float max_fft = 0.f;
+                for (int i = 0; i < FFT_SAMPLES; i++)
+                        if (fft[i] > max_fft)
+                                max_fft = fft[i];
+                if (max_fft > 0.f)
+                        for (int i = 0; i < FFT_SAMPLES; i++)
+                                fft[i] = (fft[i] / max_fft) * FFT_SCALEf;
 
 		// Update the old bins
 		std::copy(bins, bins + NUM_BINS, oldbins);
@@ -142,9 +150,11 @@ int main(int argc, char* argv[])
 			int upper = roundf(FFT_SAMPLE_RANGEf * (float)(i + 1));
 
 			// Average of FFT values is the new value for that bin
-			for (int j = lower; j < upper; j++) 
-				bins[i] += fft[j];
-			bins[i] /= FFT_SAMPLE_RANGEf;
+                        for (int j = lower; j < upper; j++)
+                                bins[i] += fft[j];
+                        int sample_count = upper - lower;
+                        if (sample_count > 0)
+                                bins[i] /= static_cast<float>(sample_count);
 
 			// Average the new bin value with the previous value for smoother display
 			bins[i] = (bins[i] + oldbins[i]) * 0.5f;
